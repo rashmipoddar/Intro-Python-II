@@ -3,8 +3,8 @@ class Item:
     self.name = name
     self.description = description
 
-  def on_take():
-    print('item taken')
+  def on_take(self):
+    print(f'item taken - {self.name}')
 
-  def on_drop():
-    print('item dropped')
+  def on_drop(self):
+    print(f'item dropped - {self.name}')

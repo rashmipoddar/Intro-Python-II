@@ -49,7 +49,6 @@ room['treasure'].s_to = room['narrow']
 # Make a new player object that is currently in the 'outside' room.
 player1 = Player('player1', room['outside'])
 # print(type(player1))
-print(player1.items)
 
 
 # Write a loop that:
@@ -63,7 +62,9 @@ while True:
     print(player1.current_room.description)
     for item in player1.current_room.items:
         print(item.name, item.description)
-    
+    for item in player1.items:
+        print(f'item with player: {item.name}')
+        print(f'item with player: {item.description}')
     # direction = input('Please choose n, s, e or w to continue or choose q to quit or items --- ').lower().split()
     direction = [val for val in input('Please choose n, s, e or w to continue or choose q to quit or items --- ').split()] 
     
@@ -76,14 +77,18 @@ while True:
     print(direction)
     if len(direction) == 1:
         direction = direction[0]
-        print(direction)
+        # print(direction)
         
         new_room = None
-        if direction in ['n', 's', 'e', 'w', 'q']:
+        if direction in ['n', 's', 'e', 'w', 'q', 'i', 'inventory']:
             if direction == 'q':
                 print('Thank you for playing')
                 print('Goodbye')
                 exit()
+            elif direction == 'inventory' or 'i':
+                print('inside the conditional for inventory')
+                for item in player1.items:
+                    print(f'The items available for use are {item.name} {item.description}')
             elif direction == 'n':
                 new_room = player1.current_room.n_to
             elif direction == 's':
@@ -92,7 +97,7 @@ while True:
                 new_room = player1.current_room.e_to
             elif direction == 'w':
                 new_room = player1.current_room.w_to
-            if new_room: 
+            if new_room:  
                 player1.current_room = new_room
             else:
                 print('This is not a valid direction for this room')
@@ -100,17 +105,33 @@ while True:
             print('Please enter a valid input')
 
     else: 
-        print(direction)
+        # print(direction)
         if direction[0] == 'take':
-            print('take item if available in room')
             for item in player1.current_room.items:
                 if (item.name) == direction[1]:
                     print('Item available')
                     player1.current_room.items.remove(item)
                     player1.items.append(item)
+                    Item.on_take(item)
                     for item in player1.items:
                         print(item.name)
                         print(item.description)
-                else:
-                    print('item not available')
-    
+            else:
+                print('Item not available in the room')
+        elif direction[0] == 'drop':
+            print('trying to drop an item')
+            print(player1.items)
+            if player1.items:
+                for item in player1.items:
+                    if(item.name) == direction[1]:
+                        print('Item available with player')
+                        player1.items.remove(item)
+                        player1.current_room.items.append(item)
+                        Item.on_drop(item)
+                        for item in player1.items:
+                            print(item.name)
+                            print(item.description)
+                    else:
+                        print('Item not available with player')
+            else:
+                print('You do not have items to drop')
