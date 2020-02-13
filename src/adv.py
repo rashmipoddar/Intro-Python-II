@@ -1,5 +1,6 @@
 from room import Room
 from player import Player
+from item import Item
 import textwrap
 
 # Declare all the rooms
@@ -23,6 +24,12 @@ chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south."""),
 }
 
+# Add items to room :
+room['outside'].items = [Item('torch', 'show light'), Item('knife', 'protect self')]
+room['foyer'].items = [Item('sword', 'old rusty sword')]
+room['overlook'].itmes = [Item('shield', 'wear it')]
+room['narrow'].items = [Item('chain', 'gold chain')]
+room['treasure'].items = [Item('coins', 'gold coins')]
 
 # Link rooms together
 
@@ -41,7 +48,9 @@ room['treasure'].s_to = room['narrow']
 
 # Make a new player object that is currently in the 'outside' room.
 player1 = Player('player1', room['outside'])
-print(type(player1))
+# print(type(player1))
+print(player1.items)
+
 
 # Write a loop that:
 #
@@ -52,35 +61,56 @@ print(type(player1))
 while True:
     print(player1.current_room.name)
     print(player1.current_room.description)
-    direction = input('Please choose n, s, e or w to continue or choose q to quit --- ')
+    for item in player1.current_room.items:
+        print(item.name, item.description)
+    
+    # direction = input('Please choose n, s, e or w to continue or choose q to quit or items --- ').lower().split()
+    direction = [val for val in input('Please choose n, s, e or w to continue or choose q to quit or items --- ').split()] 
+    
 
-
-#
 # If the user enters a cardinal direction, attempt to move to the room there.
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
 
-    new_room = None
-    if direction in 'qnsew':
-        if direction == 'q':
-            print('Thank you for playing')
-            print('Goodbye')
-            exit()
-        elif direction == 'n':
-            new_room = player1.current_room.n_to
-        elif direction == 's':
-            new_room = player1.current_room.s_to
-        elif direction == 'e':
-            new_room = player1.current_room.e_to
-        elif direction == 'w':
-            new_room = player1.current_room.w_to
-        if new_room: 
-            player1.current_room = new_room
+    print(direction)
+    if len(direction) == 1:
+        direction = direction[0]
+        print(direction)
+        
+        new_room = None
+        if direction in ['n', 's', 'e', 'w', 'q']:
+            if direction == 'q':
+                print('Thank you for playing')
+                print('Goodbye')
+                exit()
+            elif direction == 'n':
+                new_room = player1.current_room.n_to
+            elif direction == 's':
+                new_room = player1.current_room.s_to
+            elif direction == 'e':
+                new_room = player1.current_room.e_to
+            elif direction == 'w':
+                new_room = player1.current_room.w_to
+            if new_room: 
+                player1.current_room = new_room
+            else:
+                print('This is not a valid direction for this room')
         else:
-            print('This is not a valid direction for this room')
-    else:
-        print('Please enter a valid input')
+            print('Please enter a valid input')
+
+    else: 
+        print(direction)
+        if direction[0] == 'take':
+            print('take item if available in room')
+            for item in player1.current_room.items:
+                if (item.name) == direction[1]:
+                    print('Item available')
+                    player1.current_room.items.remove(item)
+                    player1.items.append(item)
+                    for item in player1.items:
+                        print(item.name)
+                        print(item.description)
+                else:
+                    print('item not available')
     
-
-
